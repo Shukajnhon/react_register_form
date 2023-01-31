@@ -57,16 +57,42 @@ const RegisterHook = () => {
   const {
     register,
     handleSubmit,
-    formState: {errors},
+    formState: {errors, isValid, isSubmitting, isSubmitSuccessful},
     control,
     setValue,
-  } = useForm({resolver: yupResolver(schema)});
+    watch,
+    reset,
+  } = useForm({
+    //resolver: yupResolver(schema),
+    // mode: "onChange",
+    defaultValues: {
+      gender: "male",
+    },
+  });
 
   console.log(errors);
 
   const onSubmitHandler = (values) => {
-    console.log(values);
+    if (!isValid) return;
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+        console.log("isValid:", isValid, values);
+
+        reset({
+          username: "",
+          email: "",
+          password: "",
+          gender: "male",
+          jobDropdown: "",
+          termCheckbox: false,
+        });
+      }, 3000);
+    });
   };
+
+  const watchGender = watch("gender");
+  console.log(watchGender);
   return (
     <form
       onSubmit={handleSubmit(onSubmitHandler)}
@@ -129,7 +155,14 @@ const RegisterHook = () => {
         <label className="cursor-pointer">Gender:</label>
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-x-3">
-            <RadioHook name="gender" value="male" control={control}></RadioHook>
+            <RadioHook
+              name="gender"
+              value="male"
+              control={control}
+              checked={watchGender === "male"}
+
+              // defaultChecked={true}
+            ></RadioHook>
             <span>Male</span>
           </div>
           <div className="flex items-center gap-x-3">
@@ -137,6 +170,7 @@ const RegisterHook = () => {
               name="gender"
               value="female"
               control={control}
+              checked={watchGender === "female"}
             ></RadioHook>
             <span>Female</span>
           </div>
@@ -172,8 +206,17 @@ const RegisterHook = () => {
         )}
       </div>
 
-      <button className="w-full p-5 bg-blue-500 text-white rounded-lg mt-5 font-semibold ">
-        Submit
+      <button
+        className={`w-full p-5 bg-blue-500 text-white rounded-lg mt-5 font-semibold ${
+          isSubmitting ? "opacity-50" : ""
+        }`}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <div className="w-5 h-5 rounded-full border-2 border-white border-t-2 border-t-transparent mx-auto animate-spin"></div>
+        ) : (
+          "Submit"
+        )}
       </button>
     </form>
   );
