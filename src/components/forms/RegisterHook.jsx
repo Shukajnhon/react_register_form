@@ -63,14 +63,14 @@ const RegisterHook = () => {
     watch,
     reset,
   } = useForm({
-    //resolver: yupResolver(schema),
-    // mode: "onChange",
+    resolver: yupResolver(schema),
+    mode: "onChange",
     defaultValues: {
       gender: "male",
     },
   });
 
-  console.log(errors);
+  // console.log(errors);
 
   const onSubmitHandler = (values) => {
     if (!isValid) return;
@@ -92,7 +92,7 @@ const RegisterHook = () => {
   };
 
   const watchGender = watch("gender");
-  console.log(watchGender);
+  console.log("Rendering React hook form");
   return (
     <form
       onSubmit={handleSubmit(onSubmitHandler)}
